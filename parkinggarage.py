@@ -66,7 +66,7 @@ class UI(ParkingGarage):
     def user_interface():
         new_garage = ParkingGarage()
         clear_screen()
-        print("Welcome to Patrick\'s Parking Garage!")
+        print("Welcome to Patrick\'s Premier Parking!")
         while True:
             action = input("\nPlease select one of the following options: \n- Take a ticket to park ['ticket']\n- Pay your ticket prior to leaving ['pay']\n- Leave the garage after paying ['leave']\n- Show available tickets & spaces['show']\n- Quit ['quit']\n\nYour selection: ")
             if action.lower().strip() == "quit":
@@ -82,4 +82,8 @@ class UI(ParkingGarage):
             else:
                 print("\nInvalid entry. Please select a valid option.")
 
-UI.user_interface()
+def main():
+    UI.user_interface()
+
+if __name__ == "__main__":
+    main()
