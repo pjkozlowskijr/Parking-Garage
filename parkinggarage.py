@@ -20,12 +20,12 @@ class ParkingGarage():
         self.user_ticket = input("\nPlease enter your ticket ID to process payment: ").upper().strip()
         if self.user_ticket.upper().strip() in self.current_ticket_paid.keys():
             while self.current_ticket_paid[self.user_ticket][0] == False:
-                self.user_payment = int(input("\nYou owe $5. Please enter your payment [type amount owed without dollar sign]. "))
+                self.user_payment = int(input("\nYou owe $5. Please enter your payment [enter amount owed WITHOUT dollar sign]. "))
                 if self.user_payment == 5:
                     self.current_ticket_paid[self.user_ticket][0] = True
                     print("\nThank you for your payment. You have 15 minutes to leave.")
                 elif self.user_payment < 5:
-                    self.remaining_payment = int(input(f"\nYou still owe ${str(5 - self.user_payment)}. Please enter your remaining payment [type amount owed without dollar sign]. "))
+                    self.remaining_payment = int(input(f"\nYou still owe ${str(5 - self.user_payment)}. Please enter your remaining payment [enter amount owed WITHOUT dollar sign]. "))
                     if self.remaining_payment == (5 - self.user_payment):
                         self.current_ticket_paid[self.user_ticket][0] = True
                         print("\nThank you for your payment. You have 15 minutes to leave.")
