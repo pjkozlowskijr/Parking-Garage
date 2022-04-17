@@ -1,9 +1,13 @@
 import os
+from datetime import datetime, timedelta
+from math import ceil
 
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 class ParkingGarage():
+    PARKING_RATE = 2
+
     def __init__(self):
         self.tickets_available = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10"]
         self.parking_spaces_open = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
@@ -11,30 +15,41 @@ class ParkingGarage():
 
     def take_ticket(self):
         clear_screen()
-        ticket_id = self.tickets_available.pop(0)
-        space_taken = self.parking_spaces_open.pop(0)
-        self.current_ticket_paid[ticket_id] = [False, space_taken]
-        print(f"Your ticket ID is {ticket_id}. Park in space {space_taken}. Be sure to write down your ticket ID and parking space.")
+        if self.tickets_available == []:
+            print("Sorry, we're full. Please wait for a ticket and space to become available.")
+        else:
+            ticket_id = self.tickets_available.pop(0)
+            space_taken = self.parking_spaces_open.pop(0)
+            self.enter = datetime.now()
+            self.current_ticket_paid[ticket_id] = {
+                "paid?": False, 
+                "parking_space": space_taken,
+                "entered_at": self.enter,
+                }
+            print(f"Your ticket ID is {ticket_id}. Park in space {space_taken}. Be sure to write down your ticket ID and parking space.")
 
     def pay_for_parking(self):
         self.user_ticket = input("\nPlease enter your ticket ID to process payment: ").upper().strip()
+        exit = datetime.now()
+        parked_total = (exit - self.enter).total_seconds()
+        amt_owed = ParkingGarage.PARKING_RATE * ceil(parked_total / 3600)
         if self.user_ticket.upper().strip() in self.current_ticket_paid.keys():
-            while self.current_ticket_paid[self.user_ticket][0] == False:
-                self.user_payment = int(input("\nYou owe $5. Please enter your payment [enter amount owed WITHOUT dollar sign]. "))
-                if self.user_payment == 5:
-                    self.current_ticket_paid[self.user_ticket][0] = True
+            while self.current_ticket_paid[self.user_ticket]["paid?"] == False:
+                self.user_payment = int(input(f"\nYou owe ${str(amt_owed)}. Please enter your payment [enter amount owed WITHOUT dollar sign]. "))
+                if self.user_payment == amt_owed:
+                    self.current_ticket_paid[self.user_ticket]["paid?"] = True
                     print("\nThank you for your payment. You have 15 minutes to leave.")
-                elif self.user_payment < 5:
-                    self.remaining_payment = int(input(f"\nYou still owe ${str(5 - self.user_payment)}. Please enter your remaining payment [enter amount owed WITHOUT dollar sign]. "))
-                    if self.remaining_payment == (5 - self.user_payment):
-                        self.current_ticket_paid[self.user_ticket][0] = True
+                elif self.user_payment < amt_owed:
+                    self.remaining_payment = int(input(f"\nYou still owe ${str(amt_owed - self.user_payment)}. Please enter your remaining payment [enter amount owed WITHOUT dollar sign]. "))
+                    if self.remaining_payment == amt_owed - self.user_payment:
+                        self.current_ticket_paid[self.user_ticket]["paid?"] = True
                         print("\nThank you for your payment. You have 15 minutes to leave.")
                     else: 
                         print("\nPlease see a parking attendant.")
                         break
-                elif self.user_payment > 5:
-                    self.current_ticket_paid[self.user_ticket][0] = True
-                    print(f"\nThank you for your payment. Please take your change totaling ${str(self.user_payment - 5)}. You have 15 minutes to leave.")
+                elif self.user_payment > amt_owed:
+                    self.current_ticket_paid[self.user_ticket]["paid?"] = True
+                    print(f"\nThank you for your payment. Please take your change totaling ${str(self.user_payment - amt_owed)}. You have 15 minutes to leave.")
                 else:
                     print("\nInvalid payment method. Please try again.")
         else:
@@ -43,10 +58,10 @@ class ParkingGarage():
     def leave_garage(self):
         clear_screen()
         self.user_ticket = input("Please enter your PAID ticket ID to leave: ").upper().strip()
-        if self.current_ticket_paid[self.user_ticket][0] == True:
+        if self.current_ticket_paid[self.user_ticket]["paid?"] == True:
                 print("\nHave a nice day! Drive safely!")
                 self.tickets_available.insert(0, self.user_ticket)
-                self.parking_spaces_open.insert(0, self.current_ticket_paid[self.user_ticket][1])
+                self.parking_spaces_open.insert(0, self.current_ticket_paid[self.user_ticket]["parking_space"])
                 del self.current_ticket_paid[self.user_ticket]
         else:
             print("\nPlease pay your ticket before leaving. Once paid, you may try leaving again.")
