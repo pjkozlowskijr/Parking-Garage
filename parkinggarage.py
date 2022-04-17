@@ -6,7 +6,7 @@ def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 class ParkingGarage():
-    PARKING_RATE = 2
+    PARKING_RATE = 3
 
     def __init__(self):
         self.tickets_available = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10"]
@@ -26,7 +26,7 @@ class ParkingGarage():
                 "parking_space": space_taken,
                 "entered_at": self.enter,
                 }
-            print(f"Your ticket ID is {ticket_id}. Park in space {space_taken}. Be sure to write down your ticket ID and parking space.")
+            print(f"Your ticket ID is {ticket_id}. Park in space {space_taken}. Be sure to write down your ticket ID and parking space. The parking rate is $3 per hour.")
 
     def pay_for_parking(self):
         self.user_ticket = input("\nPlease enter your ticket ID to process payment: ").upper().strip()
@@ -35,15 +35,18 @@ class ParkingGarage():
         amt_owed = ParkingGarage.PARKING_RATE * ceil(parked_total / 3600)
         if self.user_ticket.upper().strip() in self.current_ticket_paid.keys():
             while self.current_ticket_paid[self.user_ticket]["paid?"] == False:
-                self.user_payment = int(input(f"\nYou owe ${str(amt_owed)}. Please enter your payment [enter amount owed WITHOUT dollar sign]. "))
+                self.user_payment = float(input(f"\nYou owe ${str(amt_owed)}. Please enter your payment [enter amount owed WITHOUT dollar sign]. "))
                 if self.user_payment == amt_owed:
                     self.current_ticket_paid[self.user_ticket]["paid?"] = True
                     print("\nThank you for your payment. You have 15 minutes to leave.")
                 elif self.user_payment < amt_owed:
-                    self.remaining_payment = int(input(f"\nYou still owe ${str(amt_owed - self.user_payment)}. Please enter your remaining payment [enter amount owed WITHOUT dollar sign]. "))
+                    self.remaining_payment = float(input(f"\nYou still owe ${str(amt_owed - self.user_payment)}. Please enter your remaining payment [enter amount owed WITHOUT dollar sign]. "))
                     if self.remaining_payment == amt_owed - self.user_payment:
                         self.current_ticket_paid[self.user_ticket]["paid?"] = True
                         print("\nThank you for your payment. You have 15 minutes to leave.")
+                    elif self.remaining_payment > amt_owed - self.user_payment:
+                        self.current_ticket_paid[self.user_ticket]["paid?"] = True
+                        print(f"\nThank you for your payment. Please take your change totaling ${str(self.remaining_payment - (amt_owed - self.user_payment))}. You have 15 minutes to leave.")
                     else: 
                         print("\nPlease see a parking attendant.")
                         break
